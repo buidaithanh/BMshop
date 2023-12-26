@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import styles from "../../styles/styles";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { RxAvatar } from "react-icons/rx";
 import axios from "axios";
 import { server } from "../../server";
@@ -11,7 +11,12 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
   const [avatar, setAvatar] = useState(null);
+  const navigate = useNavigate();
 
+  const handleFileInputChange = (e) => {
+    const file = e.target.files[0];
+    setAvatar(file);
+  };
   const handleSublmit = (e) => {
     e.preventDefault();
 
@@ -22,18 +27,17 @@ const Signup = () => {
     formData.append("password", password);
 
     axios
-      .post("http://localhost:8000/api/v1/user/create-user", formData)
+      .post(`${server}/user/create-user`, formData)
       .then((res) => {
-        console.log("ress: " + res);
+        if (res.data.success === true) {
+          navigate("/");
+        }
       })
       .catch((err) => {
         console.log(err);
       });
   };
-  const handleFileInputChange = (e) => {
-    const file = e.target.files[0];
-    setAvatar(file);
-  };
+
   console.log(avatar);
 
   return (
@@ -45,12 +49,7 @@ const Signup = () => {
       </div>
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form
-            encType="multipart/form-data"
-            className="space-y-6"
-            action=""
-            onSubmit={handleSublmit}
-          >
+          <form className="space-y-6" action="" onSubmit={handleSublmit}>
             <div>
               <label
                 htmlFor="name"
